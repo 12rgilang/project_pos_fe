@@ -6,8 +6,8 @@ import { Navigate } from 'react-router-dom';
 
 function Login() {
 
-    // const [user, setUser] = useState('')
-    const [isRegister, setIsRegister] = useState(false)
+    const [employee, setEmployee] = useState('')
+    const [isRedirect, setIsRedirect] = useState(false)
 
     let username = useRef()
     let password = useRef()
@@ -19,25 +19,32 @@ function Login() {
             let inputUsername = username.current.value
             let inputPassword = password.current.value
 
-            let response = await axios.get(`http://localhost:5000/users?username=${inputUsername}&password=${inputPassword}`)
+            let response = await axios.get(`http://localhost:5020/users/login?username=${inputUsername}&password=${inputPassword}`)
+
+            console.log(response)
 
             if(response.data.length === 0) throw{message: "Account not found"}
-            localStorage.setItem('token', `${response.data[0].id}`)
 
-            setIsRegister(true)
+
+            console.log(response.data.data.token)
+
+            localStorage.setItem('token', `${response.data.data.token}` )
+
+            setEmployee('Login Success')
+            
+            setTimeout(() => {
+              setIsRedirect(true)
+            }, 3000)
 
         } catch (error) {
             console.log(error)
+            setEmployee(error)
         }
     }
 
-    if(isRegister){
+    if(isRedirect){
         return <Navigate to='/' />
     }
-
-        // useEffect(() => {
-        //     onLogin()
-        // },[])
 
   return (
     <>
@@ -77,7 +84,7 @@ function Login() {
                   />
                 </div>
 
-
+                <div className="text-green-500">{employee}</div>
                 <button
                   type="button"
                   class="inline-block px-7 py-3 bg-green-500 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-green-700 hover:shadow-lg focus:bg-green-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-800 active:shadow-lg transition duration-150 ease-in-out w-full"
